@@ -30,15 +30,32 @@ public class UserModel {
 
     public static List<User> getAllUsers() throws SQLException {
         List<User> users = new ArrayList<>();
-        String sql = "select * from users";
+        String sql = "select * from users order by id desc";
         PreparedStatement preparedStatement = conn.prepareStatement(sql);
         ResultSet rs = preparedStatement.executeQuery();
         while (rs.next()) {
             int id = rs.getInt("id");
             String username = rs.getString("username");
-            User user = new User(id, username);
+            String email = rs.getString("email");
+            User user = new User(id, username,  email);
             users.add(user);
         }
         return users;
+    }
+
+    public static void addUser(User user) throws SQLException {
+        String sql = "insert into users(username, password, email) values(?,?,?)";
+        PreparedStatement preparedStatement = conn.prepareStatement(sql);
+        preparedStatement.setString(1, user.getUsername());
+        preparedStatement.setString(2, user.getPassword());
+        preparedStatement.setString(3, user.getEmail());
+        preparedStatement.executeUpdate();
+    }
+
+    public static void deleteUserById(int id) throws SQLException {
+        String sql = "delete from users where id = ?";
+        PreparedStatement preparedStatement = conn.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        preparedStatement.executeUpdate();
     }
 }

@@ -24,6 +24,10 @@ tasks.withType(JavaCompile) {
 dependencies {
     compileOnly('jakarta.servlet:jakarta.servlet-api:6.1.0')
     implementation("com.mysql:mysql-connector-j:8.0.33")
+    // API JSTL -> tomcat 10 tro len
+    implementation("jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.0")
+// Bản thực thi (Implementation) của JSTL
+    implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl:3.0.1'
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 }
