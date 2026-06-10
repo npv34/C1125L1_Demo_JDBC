@@ -58,4 +58,45 @@ public class UserModel {
         preparedStatement.setInt(1, id);
         preparedStatement.executeUpdate();
     }
+
+    public static User getUserById(int id) throws SQLException {
+        String sql = "select * from users where id = ?";
+        PreparedStatement preparedStatement = conn.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        ResultSet rs = preparedStatement.executeQuery();
+        if (rs.next()) {
+            int userId = rs.getInt("id");
+            String username = rs.getString("username");
+            String email = rs.getString("email");
+            User user = new User(userId, username, email);
+            return user;
+        }
+        return null;
+    }
+
+    public static void editUser(int id, String username, String email) throws SQLException {
+        String sql = "update users set username = ?, email = ? where id = ?";
+        PreparedStatement preparedStatement = conn.prepareStatement(sql);
+        preparedStatement.setString(1, username);
+        preparedStatement.setString(2, email);
+        preparedStatement.setInt(3, id);
+        preparedStatement.executeUpdate();
+    }
+
+    public static List<User> searchUsers(String keyword) throws SQLException {
+        List<User> users = new ArrayList<>();
+        String sql = "select * from users where username LIKE ? OR email LIKE ? order by id desc";
+        PreparedStatement preparedStatement = conn.prepareStatement(sql);
+        preparedStatement.setString(1,"%" + keyword + "%");
+        preparedStatement.setString(2, "%" + keyword + "%");
+        ResultSet rs = preparedStatement.executeQuery();
+        while (rs.next()) {
+            int id = rs.getInt("id");
+            String username = rs.getString("username");
+            String email = rs.getString("email");
+            User user = new User(id, username,  email);
+            users.add(user);
+        }
+        return users;
+    }
 }

@@ -36,6 +36,20 @@ public class UserController extends HttpServlet {
                     throw new RuntimeException(e);
                 }
                 break;
+            case "/edit":
+                try {
+                    rendPageEditUser(req, resp);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+            case "/search":
+                try {
+                    handleSearchUser(req, resp);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
         }
     }
 
@@ -53,6 +67,14 @@ public class UserController extends HttpServlet {
                     throw new RuntimeException(e);
                 }
                 break;
+            case "/edit":
+                try {
+                    handleEditUser(req, resp);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+
         }
     }
 
@@ -91,5 +113,38 @@ public class UserController extends HttpServlet {
         int id = Integer.parseInt(req.getParameter("id"));
         UserModel.deleteUserById(id);
         resp.sendRedirect("/users");
+    }
+
+    private void rendPageEditUser(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException, SQLException {
+        int id = Integer.parseInt(req.getParameter("id"));
+        User userEdit =  UserModel.getUserById(id);
+        if (userEdit == null) {
+            resp.sendRedirect("/404");
+            return;
+        }
+        // truyen data xuong view
+        req.setAttribute("data", userEdit);
+        req.getRequestDispatcher("/WEB-INF/views/users/edit.jsp").forward(req, resp);
+    }
+
+    private static void handleEditUser(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException, SQLException {
+        int id = Integer.parseInt(req.getParameter("id"));
+        User userEdit =  UserModel.getUserById(id);
+        if (userEdit == null) {
+            resp.sendRedirect("/404");
+            return;
+        }
+        String username = req.getParameter("username");
+        String email = req.getParameter("email");
+        UserModel.editUser(id, username, email);
+        resp.sendRedirect("/users");
+    }
+
+    private static void handleSearchUser(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException, SQLException {
+        String keyword = req.getParameter("keyword");
+        List<User> users = UserModel.searchUsers(keyword);
+        req.setAttribute("data", users);
+        req.setAttribute("keyword", keyword);
+        req.getRequestDispatcher("/WEB-INF/views/users/list.jsp").forward(req, resp);
     }
 }
